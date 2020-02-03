@@ -26,12 +26,26 @@ If you'd prefer not to start from scratch then simply:
  
  ## Change startup configuration (startup.cs):  
  
-````
-using Microsoft.AspNetCore.Builder;
+1. Use JWT Tokens  
+
+```
+public void ConfigureServices(IServiceCollection services)
+{
 ...
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+...
+}
+```  
+2. Use Authentication in the application builder  
 
-
-````
+```
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{  
+...  
+   app.UseAuthentication();   
+...  
+}  
+```  
  
  ## Change client secret and endpoint configuration:  
  
