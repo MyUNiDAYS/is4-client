@@ -44,7 +44,8 @@ If you'd prefer not to start from scratch then simply:
         public const string UserInfoEndpoint = ServerEndpoint + "/connect/userinfo";
 
         //Client(this) Config
-        public const string RedirectEndpoint = "http://localhost:44341/Code";
+        public const string LaunchUrl = "http://localhost:49643";  
+        public const string RedirectEndpoint = LaunchUrl + "/Code";  
         public const string ClientId = "client1";
         public const string ClientSecret = "secret";
         public const string Scopes = "openid profile email";
