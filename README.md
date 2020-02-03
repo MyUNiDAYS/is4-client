@@ -1,15 +1,23 @@
 # IdentityServer Client
 A Sample .NET Core Client for use with IdentityServer.  
-This sample uses a gitbash command line [.NET Core CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/) approach with [SDK version 3.1.1](https://aka.ms/dotnet-download)    
 
-To build a client from scratch, follow the quick start guide below, it assumes you have .NET Core SDK 3.1.1 already installed.  
+
+# Prerequisites  
+* Visual Studio 2019 16.4 or later with the ASP.NET and web development workload  
+* .NET Core [SDK version 3.1.1](https://aka.ms/dotnet-download)  
+* Command line [.NET Core CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/) tools.  
+
+
+# Quick Start with C# .NET  
+
+To build a client from scratch, follow the steps below, it assumes you have the prerequisites already installed.  
 If you'd prefer not to start from scratch then simply:  
 * clone this repository  
 * add your configuration (client, secret, endpoints)  
 * build  
 * run
 
-# Quick Start with C# .NET  
+
 ## Get the CLI templates  
 `dotnet new -i IdentityServer4.Templates`
 
