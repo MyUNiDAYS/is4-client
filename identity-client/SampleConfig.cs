@@ -9,7 +9,8 @@ namespace identity_client
         public const string UserInfoEndpoint = ServerEndpoint + "/connect/userinfo";
 
         //Client(this) Config
-        public const string RedirectEndpoint = "http://localhost:44341/Code";
+        public const string LaunchUrl = "http://localhost:49643"; //this must match launchsettings.json "applicationUrl"
+        public const string RedirectEndpoint = LaunchUrl + "/Code";
         public const string ClientId = "client1";
         public const string ClientSecret = "secret";
         public const string Scopes = "openid profile email";

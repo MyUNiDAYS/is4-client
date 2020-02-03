@@ -36,7 +36,7 @@ namespace identity_client.Pages
 
             //3. UserInfo
             _logger.LogInformation("UserInfo step: begin");
-            await client.GetUserInfoAsync(
+            var userInfo = await client.GetUserInfoAsync(
                 new UserInfoRequest
                 {
                     Address = SampleConfig.UserInfoEndpoint,
@@ -46,6 +46,7 @@ namespace identity_client.Pages
                 });
 
             _logger.LogInformation("UserInfo step: complete");
+            _logger.LogInformation($"UserInfo details: {userInfo.Json.ToString()}");
             _logger.LogInformation("Redirecting to private page");
 
             return RedirectToPage("Privacy"); //proceed to our protected page
