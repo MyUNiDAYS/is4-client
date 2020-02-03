@@ -1,5 +1,5 @@
 # IdentityServer Client
-A Sample .NET Core Client for use with IdentityServer.  
+A Sample .NET Core Client using razor pages for use with IdentityServer.  
 
 
 # Prerequisites  
@@ -32,6 +32,26 @@ If you'd prefer not to start from scratch then simply:
 `dotnet new sln -n identity-client`  
 `dotnet sln add ./identity-client/identity-client.csproj`  
  
+ 
+ ## Change client secret and endpoint configuration:  
+ 
+ ```
+     public static class SampleConfig
+    {
+        //Server config
+        public const string ServerEndpoint = "http://localhost:10051";
+        public const string TokenEndpoint = ServerEndpoint + "/connect/token";
+        public const string UserInfoEndpoint = ServerEndpoint + "/connect/userinfo";
+
+        //Client(this) Config
+        public const string RedirectEndpoint = "http://localhost:44341/Code";
+        public const string ClientId = "client1";
+        public const string ClientSecret = "secret";
+        public const string Scopes = "openid profile email";
+        public const string ResponseType = "code";
+    }
+ ```
+ 
  ## Change startup configuration (startup.cs):  
  
 1. Use JWT Tokens and remove automatic authentication:  
@@ -50,12 +70,12 @@ If you'd prefer not to start from scratch then simply:
                 .AddCookie("Cookies")
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "http://localhost:10051";
+                    options.Authority = SampleConfig.ServerEndpoint;
                     options.RequireHttpsMetadata = false;
 
-                    options.ClientId = "client1";
-                    options.ClientSecret = "secret";
-                    options.ResponseType = "code";
+                    options.ClientId = SampleConfig.ClientId;
+                    options.ClientSecret = SampleConfig.ClientSecret;
+                    options.ResponseType = SampleConfig.ResponseType;
 
                     options.SaveTokens = true;
                 });
@@ -72,12 +92,16 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 }  
 ```  
  
- ## Change client secret and endpoint configuration:  
  
- ## Add a button, action, and controller to invoke the login process:
+ ## Add pages and actions to invoke the login process:
  
  ```
- controller, cshtml, etc.
- ```
+ index.cshtml  
+ index.cshtml.cs  
+ code.cshtml  
+ code.cshtml.cs  
+ privacy.cshtml  
+ privacy.cshtml.cs  
+  ```
  
 Full working sample application is included in `identity-client/` subfolder
