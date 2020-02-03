@@ -1,5 +1,5 @@
-# is4-client
-A Sample Client for use with IdentityServer 
+# IdentityServer Client
+A Sample .NET Client for use with IdentityServer 
 
 
 # Quick Start with C# .NET
