@@ -26,16 +26,33 @@ If you'd prefer not to start from scratch then simply:
  
  ## Change startup configuration (startup.cs):  
  
-1. Use JWT Tokens  
+1. Use JWT Tokens and remove automatic authentication:  
 
-```
-public void ConfigureServices(IServiceCollection services)
-{
-...
-JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-...
-}
-```  
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<IISServerOptions>(c => { c.AutomaticAuthentication = false; });
+            services.AddRazorPages();
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+                .AddCookie("Cookies")
+                .AddOpenIdConnect("oidc", options =>
+                {
+                    options.Authority = "http://localhost:10051";
+                    options.RequireHttpsMetadata = false;
+
+                    options.ClientId = "client1";
+                    options.ClientSecret = "secret";
+                    options.ResponseType = "code";
+
+                    options.SaveTokens = true;
+                });
+        }
+
 2. Use Authentication in the application builder  
 
 ```
