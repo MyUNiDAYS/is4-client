@@ -1,11 +1,12 @@
 # IdentityServer Client
-A Sample .NET Client for use with IdentityServer 
+A Sample .NET Core Client for use with IdentityServer.  
+This sample uses a gitbash command line [.NET Core CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/?tabs=netcore2x) approach.  
 
 
 # Quick Start with C# .NET
 
 ## Get the CLI templates
-  `dotnet new -i IdentityServer4.Templates`
+`dotnet new -i IdentityServer4.Templates`
 
 ## Make a new MVC web application:  
 `mkdir is4-client`  
@@ -22,4 +23,4 @@ A Sample .NET Client for use with IdentityServer
  
  `TODO`  
  
-Full Sample included in `src/` folder
+Full Sample included in `is4-client/` subfolder
