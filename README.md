@@ -104,4 +104,14 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
  privacy.cshtml.cs  
   ```
  
-Full working sample application is included in `identity-client/` subfolder
+## Viewing Results:  
+ 
+The sample uses the default Microsoft ILogger Logging Extension  
+The default ASP.NET Core project templates call CreateDefaultBuilder, which adds the following logging providers:
+
+* Console  
+* Debug  
+* EventSource  
+* EventLog (only when running on Windows)
+
+ 
