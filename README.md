@@ -1,5 +1,5 @@
-# IdentityServer Client
-A Sample .NET Core Client using razor pages for use with IdentityServer.  
+# OIDC Client
+A Sample .NET Core Client using razor pages for use with Open ID Connect.  
 
 
 # Prerequisites  
@@ -16,10 +16,6 @@ If you'd prefer not to start from scratch then simply:
 * add your configuration (client, secret, endpoints)  
 * build  
 * run
-
-
-## Get the CLI templates  
-`dotnet new -i IdentityServer4.Templates`
 
 ## Make a new MVC web application:  
 `mkdir identity-client`  
