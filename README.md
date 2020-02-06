@@ -31,9 +31,9 @@ If you'd prefer not to start from scratch then simply:
  
 
  
- ## Change startup configuration (startup.cs):  
+ ## Change startup configuration (startup.cs) to use your own client ID:  
 
-````
+```csharp
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -69,7 +69,7 @@ namespace identity_client
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.Authority = "https://demo.identityserver.io";  
                     options.RequireHttpsMetadata = true;
-                    options.ClientId = "interactive.public";  //YOUR CLIENTID HERE
+                    options.ClientId = "interactive.public";  //TODO: YOUR CLIENTID HERE
                     options.ResponseType = OpenIdConnectResponseType.Code;
                     options.UsePkce = true;
                     options.Scope.Add("profile");
@@ -113,11 +113,11 @@ namespace identity_client
         }
     }
 }
-````
+```
 
 ## Add ability to view claims to main page (index.cshtml)
 
-````
+```HTML+Razor
 @page
 @model IndexModel
 @{
@@ -147,11 +147,11 @@ else
 }
 </div>
 
-````
+```
 
 ## Force the user to authorize to view the main page (index.cshtml.cs) by adding the Authorize attribute:  
 
-````
+```csharp
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -175,12 +175,12 @@ namespace identity_client.Pages
     }
 }
 
-````
+```
 
 
 ## Add a Razor page for logout (logout.cshtml)
 
-````
+```HTML+Razor
 @page
 @model identity_client.LogoutModel
 @{
@@ -188,11 +188,11 @@ namespace identity_client.Pages
 }
 
 <h1>Logout</h1>
-````
+```
 
 ## Add the logout code (logout.cshtml.cs)
 
-````
+```csharp
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -214,7 +214,7 @@ namespace identity_client
         }
     }
 }
-````
+```
 
 Finally, Add a razor page for signedout.  
 
