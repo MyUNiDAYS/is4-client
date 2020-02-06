@@ -1,9 +1,12 @@
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace identity_client
 {
@@ -19,30 +22,36 @@ namespace identity_client
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<IISServerOptions>(c => { c.AutomaticAuthentication = false; });
-            services.AddRazorPages();
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "Cookies";
-                options.DefaultChallengeScheme = "oidc";
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-                .AddCookie("Cookies")
-                .AddOpenIdConnect("oidc", options =>
+                .AddCookie()
+                .AddOpenIdConnect(options =>
                 {
-                    options.Authority = SampleConfig.ServerEndpoint;
-                    options.RequireHttpsMetadata = false;
-                    options.ClientId = SampleConfig.ClientId;
-                    options.ClientSecret = SampleConfig.ClientSecret;
-                    options.ResponseType = SampleConfig.ResponseType;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.Authority = "https://demo.identityserver.io";
+                    options.RequireHttpsMetadata = true;
+                    options.ClientId = "interactive.public";
+                    options.ResponseType = OpenIdConnectResponseType.Code;
+                    options.UsePkce = true;
+                    options.Scope.Add("profile");
+                    options.Scope.Add("offline_access");
                     options.SaveTokens = true;
+                    options.GetClaimsFromUserInfoEndpoint = true;
                 });
+
+            services.AddAuthorization();
+            services.AddRazorPages();
+                       
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -57,8 +66,9 @@ namespace identity_client
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            //NOTE: UseAuthentication has to come before UseAuthorization, see https://docs.microsoft.com/en-us/aspnet/core/migration/22-to-30?view=aspnetcore-3.1&tabs=visual-studio
+            app.UseAuthentication(); 
             app.UseAuthorization();
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
