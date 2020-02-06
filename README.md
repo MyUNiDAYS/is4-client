@@ -178,7 +178,19 @@ namespace identity_client.Pages
 ````
 
 
-## Add the Logout code (logout.cshtml.cs)
+## Add the Logout page 
+
+````
+@page
+@model identity_client.LogoutModel
+@{
+    ViewData["Title"] = "Logout";
+}
+
+<h1>Logout</h1>
+````
+
+## Add the logout code (logout.cshtml.cs)
 
 ````
 
@@ -204,6 +216,7 @@ namespace identity_client
 }
 ````
 
+Finally, Add a razor page for signedout.  
 
 
 
