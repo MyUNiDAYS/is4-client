@@ -1,5 +1,6 @@
 # OIDC Client
-A Sample .NET Core Client using razor pages for use with Open ID Connect.  
+A Sample .NET Core Client using razor pages for use with Open ID Connect (PKCE method).  
+
 
 
 # Prerequisites  
@@ -13,7 +14,7 @@ A Sample .NET Core Client using razor pages for use with Open ID Connect.
 To build a client from scratch, follow the steps below, it assumes you have the prerequisites already installed.  
 If you'd prefer not to start from scratch then simply:  
 * clone this repository  
-* add your configuration (client, secret, endpoints)  
+* add your configuration (clientid, endpoints)  
 * build  
 * run
 
@@ -28,87 +29,182 @@ If you'd prefer not to start from scratch then simply:
 `dotnet new sln -n identity-client`  
 `dotnet sln add ./identity-client/identity-client.csproj`  
  
- 
- ## Change client secret and endpoint configuration:  
- 
- ```
-     public static class SampleConfig
-    {
-        //Server config
-        public const string ServerEndpoint = "http://localhost:10051";
-        public const string TokenEndpoint = ServerEndpoint + "/connect/token";
-        public const string UserInfoEndpoint = ServerEndpoint + "/connect/userinfo";
 
-        //Client(this) Config
-        public const string LaunchUrl = "http://localhost:49643";  
-        public const string RedirectEndpoint = LaunchUrl + "/Code";  
-        public const string ClientId = "client1";
-        public const string ClientSecret = "secret";
-        public const string Scopes = "openid profile email";
-        public const string ResponseType = "code";
-    }
- ```
  
  ## Change startup configuration (startup.cs):  
- 
-1. Use JWT Tokens and remove automatic authentication:  
 
-        public void ConfigureServices(IServiceCollection services)
+````
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+
+namespace identity_client
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
         {
-            services.Configure<IISServerOptions>(c => { c.AutomaticAuthentication = false; });
-            services.AddRazorPages();
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "Cookies";
-                options.DefaultChallengeScheme = "oidc";
-            })
-                .AddCookie("Cookies")
-                .AddOpenIdConnect("oidc", options =>
-                {
-                    options.Authority = SampleConfig.ServerEndpoint;
-                    options.RequireHttpsMetadata = false;
-
-                    options.ClientId = SampleConfig.ClientId;
-                    options.ClientSecret = SampleConfig.ClientSecret;
-                    options.ResponseType = SampleConfig.ResponseType;
-
-                    options.SaveTokens = true;
-                });
+            Configuration = configuration;
         }
 
-2. Use Authentication in the application builder  
+        public IConfiguration Configuration { get; }
 
-```
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-{  
-...  
-   app.UseAuthentication();   
-...  
-}  
-```  
- 
- 
- ## Add pages and actions to invoke the login process:
- 
- ```
- index.cshtml  
- index.cshtml.cs  
- code.cshtml  
- code.cshtml.cs  
- privacy.cshtml  
- privacy.cshtml.cs  
-  ```
- 
-## Viewing Results:  
- 
-The sample uses the default Microsoft ILogger Logging Extension  
-The default ASP.NET Core project templates call CreateDefaultBuilder, which adds the following logging providers:
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+                .AddCookie()
+                .AddOpenIdConnect(options =>
+                {
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.Authority = "https://demo.identityserver.io";  
+                    options.RequireHttpsMetadata = true;
+                    options.ClientId = "interactive.public";  //YOUR CLIENTID HERE
+                    options.ResponseType = OpenIdConnectResponseType.Code;
+                    options.UsePkce = true;
+                    options.Scope.Add("profile");
+                    options.Scope.Add("offline_access");
+                    options.SaveTokens = true;
+                    options.GetClaimsFromUserInfoEndpoint = true;
+                });
 
-* Console  
-* Debug  
-* EventSource  
-* EventLog (only when running on Windows)
+            services.AddAuthorization();
+            services.AddRazorPages();
+                       
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
+            //NOTE: UseAuthentication has to come before UseAuthorization, see https://docs.microsoft.com/en-us/aspnet/core/migration/22-to-30?view=aspnetcore-3.1&tabs=visual-studio
+            app.UseAuthentication(); 
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+            });
+        }
+    }
+}
+````
+
+## Add ability to view claims to main page (index.cshtml)
+
+````
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-left">
+    <h1 class="display-8">Welcome</h1>
+        
+
+    @if (User.Identity.IsAuthenticated)
+{
+    <h2>Authenticated</h2>
+    <ul>
+        @foreach (var claim in User.Claims)
+        {
+            <li><strong>@claim.Type</strong>: @claim.Value</li>
+        }
+    </ul>
+
+
+     <a href="/logout">Logout</a>
+}
+else
+{
+    <h2>User Not Authenticated </h2>
+}
+</div>
+
+````
+
+## Force the user to authorize to view the main page (index.cshtml.cs)
+
+````
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
+
+namespace identity_client.Pages
+{
+    [Authorize]
+    public class IndexModel : PageModel
+    {
+        private readonly ILogger<IndexModel> _logger;
+
+        public IndexModel(ILogger<IndexModel> logger)
+        {
+            _logger = logger;
+        }
+
+        public void OnGet()
+        {
+
+        }
+    }
+}
+
+````
+
+
+## Add the Logout code (logout.cshtml.cs)
+
+````
+
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace identity_client
+{
+    [Authorize]
+    public class LogoutModel : PageModel
+    {
+        public async Task<IActionResult> OnGetAsync()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return Redirect("/SignedOut");
+        }
+    }
+}
+````
+
+
+
 
  
