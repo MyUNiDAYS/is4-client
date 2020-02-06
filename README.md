@@ -149,7 +149,7 @@ else
 
 ```
 
-## Force the user to authorize to view the main page (index.cshtml.cs) by adding the Authorize attribute:  
+## Require Authorization to view the main page (index.cshtml.cs) by adding the Authorize attribute:  
 
 ```csharp
 using Microsoft.AspNetCore.Authorization;
