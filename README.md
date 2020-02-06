@@ -149,7 +149,7 @@ else
 
 ````
 
-## Force the user to authorize to view the main page (index.cshtml.cs)
+## Force the user to authorize to view the main page (index.cshtml.cs) by adding the Authorize attribute:  
 
 ````
 using Microsoft.AspNetCore.Authorization;
@@ -178,7 +178,7 @@ namespace identity_client.Pages
 ````
 
 
-## Add the Logout page 
+## Add a Razor page for logout (logout.cshtml)
 
 ````
 @page
